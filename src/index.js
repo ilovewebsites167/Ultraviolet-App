@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { hostname } from "node:os";
 import { createServer } from "node:http";
+import path from 'path';
 import express from "express";
 import wisp from "wisp-server-node";
 
@@ -17,13 +18,19 @@ app.use("/uv/", express.static(uvPath));
 app.use("/epoxy/", express.static(epoxyPath));
 app.use("/baremux/", express.static(baremuxPath));
 
-// Error for everything else
+// Route for the homepage
+app.get('/', (req, res) => {
+    res.sendFile(path.join(process.cwd(), '/public/index.html'));
+});
+
+// Error for everything else (404)
 app.use((req, res) => {
-	res.status(404);
-	res.sendFile("./public/404.html");
+    res.status(404);
+    res.send("Not Found");
 });
 
 const server = createServer();
+
 
 server.on("request", (req, res) => {
 	res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
